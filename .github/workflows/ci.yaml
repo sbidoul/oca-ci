@@ -114,7 +114,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Tests
-        run: docker run -v ${PWD}/tests:/mnt/tests ghcr.io/oca/oca-ci/${{ matrix.image_name }}:latest /mnt/tests/runtests.sh -v -s
+        run: docker run -v ${PWD}/tests:/mnt/tests --network=host ghcr.io/oca/oca-ci/${{ matrix.image_name }}:latest /mnt/tests/runtests.sh -v -s
       - name: Push image
         uses: docker/build-push-action@v2
         with:

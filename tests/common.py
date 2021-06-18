@@ -43,6 +43,7 @@ def make_addons_dir(test_addons):
     """Copy test addons to a temporary directory.
 
     Adjust the addons version to match the Odoo version being tested.
+    Rename __manifest__.py to __openerp__.py for older Odoo versions.
     """
     with tempfile.TemporaryDirectory() as tmpdir:
         tmppath = Path(tmpdir)
@@ -53,6 +54,8 @@ def make_addons_dir(test_addons):
             manifest = ast.literal_eval(manifest_path.read_text())
             manifest["version"] = os.environ["ODOO_VERSION"] + "." + manifest["version"]
             manifest_path.write_text(repr(manifest))
+            if odoo_version_info < (10, 0):
+                manifest_path.rename(manifest_path.parent / "__openerp__.py")
         yield tmppath
 
 

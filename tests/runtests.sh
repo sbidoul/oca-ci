@@ -10,4 +10,4 @@ testvenv=/tmp/testvenv
 
 virtualenv -p python3 $testvenv
 $testvenv/bin/pip install pytest
-$testvenv/bin/pytest --color=yes $here "$@"
+$testvenv/bin/pytest --color=yes --ignore $here/data $here "$@"

@@ -40,6 +40,10 @@ def preserve_odoo_venv():
 
 @contextlib.contextmanager
 def make_addons_dir(test_addons):
+    """Copy test addons to a temporary directory.
+
+    Adjust the addons version to match the Odoo version being tested.
+    """
     with tempfile.TemporaryDirectory() as tmpdir:
         tmppath = Path(tmpdir)
         for addon_name in test_addons:
@@ -59,3 +63,7 @@ def install_test_addons(test_addons):
     ) as addons_dir:
         subprocess.check_call(["oca_install_addons"], cwd=addons_dir)
         yield addons_dir
+
+
+def dropdb():
+    subprocess.check_call(["dropdb", "--if-exists", os.environ["PGDATABASE"]])

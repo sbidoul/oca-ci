@@ -31,7 +31,7 @@ def get_addons_to_install() -> str:
     """Get a comma-separated list of addons dependencies to install using manifestoo."""
     include = os.environ.get("INCLUDE", "")
     exclude = os.environ.get("EXCLUDE", "")
-    addons_dir = os.environ.get("ADDONS_DIR", "")
+    addons_dir = os.environ.get("ADDONS_DIR", ".")
 
     if include:
         cmd = [
@@ -41,7 +41,7 @@ def get_addons_to_install() -> str:
             "--select-exclude",
             exclude,
             "list-depends",
-            "--separator=",
+            "--separator=,",
         ]
     else:
         cmd = [
@@ -51,10 +51,10 @@ def get_addons_to_install() -> str:
             "--select-exclude",
             exclude,
             "list-depends",
-            "--separator=",
+            "--separator=,",
         ]
 
-    return subprocess.check_output(cmd, text=True).strip()
+    return subprocess.check_output(cmd, text=True).strip() or "base"
 
 
 def main():
@@ -75,12 +75,14 @@ def main():
     ]
 
     if get_odoo_major_version() >= 19:
-        # We don't install auto_install addons, because if they would be
-        # preinstalled, the test command which does a -i --test-enable would
-        # not test them.
+        # Add --skip-auto-install for Odoo 19.0 and later
+        # Since Odoo 19.0, already installed addons are not re-installed by --init,
+        # and so their unit tests are not executed.
+        # So, we let oca_install_addons explicitly install and test them.
         odoo_cmd.append("--skip-auto-install")
 
-    subprocess.run(shlex.join(odoo_cmd), shell=True, check=True)
+    # TODO: log commands like set -x did
+    subprocess.check_call(["bash", "-o", "pipefail", "-c", shlex.join(odoo_cmd)])
 
 
 if __name__ == "__main__":

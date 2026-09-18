@@ -4,4 +4,4 @@
 # For the transitive search to work, dependencie must be available in
 # the Odoo addons path.
 #
-manifestoo -d $ADDONS_DIR list-external-dependencies $1 --transitive
+manifestoo -v -d $ADDONS_DIR list-external-dependencies $1 --transitive
